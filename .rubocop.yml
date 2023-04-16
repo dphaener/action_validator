@@ -1,0 +1,6 @@
+AllCops:
+  Exclude:
+    - test/dummy/**/*
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes

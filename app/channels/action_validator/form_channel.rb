@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 module ActionValidator
   class FormChannel < ApplicationCable::Channel
+    include ActionController::RequestForgeryProtection
+
     def subscribed
-      stream_from 'form_channel'
+      stream_from "action_validator_form_channel"
     end
 
     def unsubscribed
@@ -14,14 +18,13 @@ module ActionValidator
       instance.validate
       errors = instance.errors
       model_errors =
-        errors
-        .to_hash
-        .map { |attr, _| [attr, errors.full_messages_for(attr)] }
-        .to_h
+        errors.attribute_names.to_h do |attr|
+          [attr, errors.full_messages_for(attr)]
+        end
       base_errors = model_errors.delete(:base) || []
 
       ActionCable.server.broadcast(
-        'form_channel',
+        "form_channel",
         { baseErrors: base_errors, modelErrors: model_errors }
       )
     end
@@ -29,7 +32,7 @@ module ActionValidator
     private
 
     def parse_params(data)
-      params = data.without('action', 'authenticity_token')
+      params = data.without("action", "authenticity_token")
       parsed_params = Rack::Utils.parse_nested_query(params.to_query)
       parameters = ActionController::Parameters.new(parsed_params)
       model_name = parameters.keys.first
