@@ -2,5 +2,7 @@ AllCops:
   Exclude:
     - test/dummy/**/*
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
 Style/StringLiterals:
   EnforcedStyle: double_quotes

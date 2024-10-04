@@ -11,7 +11,7 @@ module ActionValidator
   mattr_accessor :input_error_selector, default: :input_error
   mattr_accessor :default_validate_event, default: :blur
 
-  STIMULUS_VALUES = {
+  STIMULUS_SELECTORS = {
     target: "action-validator--form-target",
     controller: "action-validator--form",
     validate_action: "action-validator--form#validate"

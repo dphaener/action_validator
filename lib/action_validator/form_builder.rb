@@ -12,6 +12,14 @@ module ActionValidator
       super
     end
 
+    def error(attribute, options = {}) # :nodoc:
+      options[:data] ||= {}
+      options[:data][ActionValidator::STIMULUS_SELECTORS[:target]] = :error
+      options[:data][:attribute] = attribute
+
+      @template.tag(:div, { **options, id: attribute })
+    end
+
     def submit(value = nil, options = {}, &block) # :nodoc:
       if value.is_a?(Hash)
         options = value
@@ -119,10 +127,10 @@ module ActionValidator
     def input_data_options(attribute, options)
       validate_event = options.delete(:validate_event) || ActionValidator.default_validate_event
       {
-        ActionValidator::STIMULUS_VALUES[:target] => :input,
+        ActionValidator::STIMULUS_SELECTORS[:target] => :input,
         "is-dirty" => false,
         "remote-validate" => options.delete(:remote_validate) || false,
-        "action" => "#{validate_event}->#{ActionValidator::STIMULUS_VALUES[:validate_action]}",
+        "action" => "#{validate_event}->#{ActionValidator::STIMULUS_SELECTORS[:validate_action]}",
         "attribute" => attribute,
         "valid" => !options[:required]
       }

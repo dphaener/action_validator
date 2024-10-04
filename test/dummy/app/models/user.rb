@@ -11,7 +11,6 @@ class User < ApplicationRecord
   validate :testing
 
   def testing
-    # return
-    # errors.add(:base, 'This is just a general error')
+    errors.add(:base, "This is just a general error")
   end
 end

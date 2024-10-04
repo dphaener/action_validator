@@ -9,9 +9,8 @@ Gem::Specification.new do |spec|
   spec.email = ["darin.haener@hey.com"]
   spec.homepage = "https://www.github.com/dphaener/action_validator"
   spec.summary = "Simple client and server side form validation."
-  spec.description =
-    "Validate your Rails forms remotely in real time using ActionCable. Also validate client side " \
-      'using native HTML validations and present them in a much "prettier" format.'
+  spec.description = "Validate your Rails forms remotely in real time using ActionCable. Also validate client side " \
+                     "using native HTML validations and present them in a much 'prettier' format."
   spec.license = "MIT"
 
   spec.metadata["homepage_uri"] = spec.homepage

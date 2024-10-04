@@ -1,68 +1,66 @@
 <%= validator_form_with(model: user) do |f| %>
-  <% if @user.errors.any? %>
-    <div data-action-validator-f-target="globalErrors" id="form-errors" style="color: red; display: <%= @user.errors.any? ? 'block' : 'none' %>">
-      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+  <div data-action-validator-form-target="globalErrors" id="form-errors" style="color: red; display: none">
+    <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
 
-      <ul>
-        <% user.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+    <ul>
+      <% user.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+  </div>
 
   <div>
     <%= f.label :name, style: "display: block" %>
     <%= f.text_field :name, required: true, minlength: 3 %>
-    <%= validator_error :name %>
+    <%= f.error :name, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :email, style: "display: block" %>
     <%= f.email_field :email, required: true, remote_validate: true %>
-    <%= validator_error :email %>
+    <%= f.error :email, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :password, style: "display: block" %>
     <%= f.password_field :password, required: true, minlength: 6 %>
-    <%= validator_error :password %>
+    <%= f.error :password, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :phone, style: "display: block" %>
     <%= f.phone_field :phone, required: true, remote_validate: true %>
-    <%= validator_error :phone %>
+    <%= f.error :phone, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :birthdate, style: "display: block" %>
     <%= f.date_field :birthdate, required: true %>
-    <%= validator_error :birthdate %>
+    <%= f.error :birthdate, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :age, style: "display: block" %>
     <%= f.number_field :age, required: true, min: 18 %>
-    <%= validator_error :age %>
+    <%= f.error :age, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :homepage, style: "display: block" %>
     <%= f.url_field :homepage, required: true, pattern: "https?://.*" %>
-    <%= validator_error :homepage %>
+    <%= f.error :homepage, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :bio, style: "display: block" %>
     <%= f.text_area :bio, required: true %>
-    <%= validator_error :bio %>
+    <%= f.error :bio, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
     <%= f.label :receive_emails, style: "display: block" %>
     <%= f.check_box :receive_emails %>
-    <%= validator_error :receive_emails %>
+    <%= f.error :receive_emails, style: "color: red; font-size: 0.7em;" %>
   </div>
 
   <div>
