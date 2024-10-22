@@ -98,11 +98,16 @@ export default class extends Controller {
     const { errors } = data;
 
     this.remoteValidatableInputs.forEach(inputElement => {
+      if (inputElement.dataset.isDirty === 'false') return;
+
       const attributeName = inputElement.dataset.attribute;
       const error = errors[attributeName];
       const errorElement = this.errorTargets.find(target => attributeName === target.dataset.attribute);
       if (!errorElement) {
-        Stimulus.logDebugActivity('No error element found for input. Cannot add error.', 'cableReceived');
+        Stimulus.logDebugActivity(
+          `No error element found for input with attribute '${attributeName}'. Cannot add error.`,
+          'cableReceived'
+        );
         return;
       }
 
@@ -137,10 +142,10 @@ export default class extends Controller {
   }
 
   #cableConnected() {
-    Stimulus.logDebugActivity('Connected to cable', 'cableConnected');
+    Stimulus.logDebugActivity('ActionValidator connected to cable', 'cableConnected');
   }
 
   #cableDisconnected() {
-    Stimulus.logDebugActivity('Disconnected from cable', 'cableDisconnected');
+    Stimulus.logDebugActivity('ActionValidator disconnected from cable', 'cableDisconnected');
   }
 }
