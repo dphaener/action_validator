@@ -55,8 +55,11 @@ module ActionValidator
       render_field(attribute, options) { super }
     end
 
-    def check_box(attribute, options = {}) # :nodoc:
-      render_field(attribute, options) { super }
+    def check_box(attribute, options = {}, checked_value = "1", unchecked_value = "0") # :nodoc:
+      options[:data] ||= {}
+      options[:data].merge!(input_data_options(attribute, options))
+
+      super(attribute, options, checked_value, unchecked_value)
     end
 
     def datetime_field(attribute, options = {}) # :nodoc:

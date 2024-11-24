@@ -28,7 +28,7 @@ module ActionValidator
       options[:data][ActionValidator::STIMULUS_SELECTORS[:target]] = :error
       options[:data][:attribute] = attribute
 
-      tag(:div, { **options, id: attribute })
+      tag.div({ **options, id: attribute }) { '' }
     end
 
     private
