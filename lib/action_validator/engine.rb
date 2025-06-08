@@ -14,7 +14,6 @@ module ActionValidator
 
     initializer "action_validator.assets" do |app|
       app.config.assets.paths << root.join("app/javascript")
-      app.config.assets.precompile += %w[action_validator_manifest]
     end
 
     initializer "action_validator.importmap", before: "importmap" do |app|

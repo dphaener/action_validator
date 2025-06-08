@@ -14,16 +14,19 @@ module ActionValidator
     end
 
     def validate(data)
-      model_class, params = parse_params(data["formData"])
-      if model_class.nil?
-        Rails.logger.warn("No valid model class found, cannot perform remote validation.")
-        ActionCable.server.broadcast("action_validator_form_channel", { errors: {} })
-        return
+      Rails.logger.tagged("ActionValidator") do
+        model_class, params = parse_params(data["formData"])
+
+        if model_class.nil?
+          Rails.logger.warn("No valid model class found, cannot perform remote validation.")
+          ActionCable.server.broadcast("action_validator_form_channel", { errors: {} })
+          return
+        end
+
+        instance = validated_instance(model_class, params)
+
+        ActionCable.server.broadcast("action_validator_form_channel", { errors: parse_model_errors(instance) })
       end
-
-      instance = validated_instance(model_class, params)
-
-      ActionCable.server.broadcast("action_validator_form_channel", { errors: parse_model_errors(instance) })
     end
 
     private
@@ -35,10 +38,6 @@ module ActionValidator
     end
 
     def parse_model_errors(instance)
-      # TODO: What about errors on :base? Or any other random shit people might add?
-      #       I think we can just tell people to add a div with the proper attribute?
-      #       Or just don't allow it?
-      #
       instance.errors.each_with_object({}) { |error, hash| hash[error.attribute] = error.full_message }
     end
 

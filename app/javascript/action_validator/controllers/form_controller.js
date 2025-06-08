@@ -1,26 +1,24 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 import consumer from "channels/consumer";
 
 export default class extends Controller {
-  static targets = ['submit', 'input', 'error'];
+  static targets = ["submit", "input", "error"];
   static values = { modelName: String };
 
   connect() {
-    // TODO: This might not JUST be inputs. It could be any DOM element. Maybe a better name is needed here.
-    //       `remoteValidatableElements` or something. The current set up doesn't really work well for this though
-    //       because the `remoteValidatableInputs` is directly tied to an actual input. Maybe the cableReceived method
-    //       should check for another `target` that matches the `errors` key in the return value if the error element
-    //       doesn't exist for that attribute...
-    //
-    this.remoteValidatableInputs = []
-    this.channel = consumer.subscriptions.create('ActionValidator::FormChannel', {
-      connected: this.#cableConnected.bind(this),
-      disconnected: this.#cableDisconnected.bind(this),
-      received: this.#cableReceived.bind(this),
-    });
+    this.remoteValidatableInputs = [];
+    this.channel = consumer.subscriptions.create(
+      "ActionValidator::FormChannel",
+      {
+        connected: this.#cableConnected.bind(this),
+        disconnected: this.#cableDisconnected.bind(this),
+        received: this.#cableReceived.bind(this),
+      },
+    );
 
-    this.inputTargets.forEach(input => {
-      if (input.dataset.remoteValidate === 'true') this.remoteValidatableInputs.push(input);
+    this.inputTargets.forEach((input) => {
+      if (input.dataset.remoteValidate === "true")
+        this.remoteValidatableInputs.push(input);
     });
 
     this.#disableSubmit();
@@ -36,31 +34,35 @@ export default class extends Controller {
 
   validate(ev) {
     const inputElement = ev.target;
-    const { dataset: { remoteValidate } } = inputElement;
+    const {
+      dataset: { remoteValidate },
+    } = inputElement;
     this.#checkAndSetDirty(inputElement);
-    if (inputElement.dataset.isDirty === 'false') return;
+    if (inputElement.dataset.isDirty === "false") return;
 
     const htmlValid = this.validateInput(ev.target);
 
-    if (remoteValidate === 'true' && htmlValid) {
-     this.channel.perform('validate', { formData: this.#serializeForm() });
+    if (remoteValidate === "true" && htmlValid) {
+      this.channel.perform("validate", { formData: this.#serializeForm() });
     } else {
       this.validateForm();
     }
   }
 
   validateInput(input) {
-    input.setCustomValidity('');
+    input.setCustomValidity("");
     const isValid = input.checkValidity();
-    const errorElement = this.errorTargets.find(target => input.dataset.attribute === target.dataset.attribute);
+    const errorElement = this.errorTargets.find(
+      (target) => input.dataset.attribute === target.dataset.attribute,
+    );
 
     if (isValid) {
-      errorElement.innerHTML = '';
+      if (errorElement) errorElement.innerHTML = "";
       input.dataset.valid = true;
 
       return true;
     } else {
-      errorElement.innerHTML = input.validationMessage;
+      if (errorElement) errorElement.innerHTML = input.validationMessage;
       input.dataset.valid = false;
 
       return false;
@@ -77,18 +79,20 @@ export default class extends Controller {
     const currentlyDirty = element.dataset.isDirty;
     const value = element.value;
 
-    if (currentlyDirty === 'false' && value) element.dataset.isDirty = true;
+    if (currentlyDirty === "false" && value) element.dataset.isDirty = true;
   }
 
   #serializeForm() {
     const formData = new FormData(this.element);
-    const queryString = new URLSearchParams(formData).toString()
+    const queryString = new URLSearchParams(formData).toString();
 
     return queryString;
   }
 
   #formValid() {
-    return this.inputTargets.every(element => element.dataset.valid === 'true');
+    return this.inputTargets.every(
+      (element) => element.dataset.valid === "true",
+    );
   }
 
   // TODO: Add an option to just show errors globally somewhere and not next to each input. We should support arbitrary
@@ -97,16 +101,18 @@ export default class extends Controller {
   #cableReceived(data) {
     const { errors } = data;
 
-    this.remoteValidatableInputs.forEach(inputElement => {
-      if (inputElement.dataset.isDirty === 'false') return;
+    this.remoteValidatableInputs.forEach((inputElement) => {
+      if (inputElement.dataset.isDirty === "false") return;
 
       const attributeName = inputElement.dataset.attribute;
       const error = errors[attributeName];
-      const errorElement = this.errorTargets.find(target => attributeName === target.dataset.attribute);
+      const errorElement = this.errorTargets.find(
+        (target) => attributeName === target.dataset.attribute,
+      );
       if (!errorElement) {
         Stimulus.logDebugActivity(
           `No error element found for input with attribute '${attributeName}'. Cannot add error.`,
-          'cableReceived'
+          "cableReceived",
         );
         return;
       }
@@ -116,36 +122,48 @@ export default class extends Controller {
         inputElement.setCustomValidity(errors[attributeName]);
         inputElement.dataset.valid = false;
       } else {
-        errorElement.innerHTML = '';
-        inputElement.setCustomValidity('');
+        errorElement.innerHTML = "";
+        inputElement.setCustomValidity("");
         inputElement.dataset.valid = true;
       }
-    })
+    });
 
     this.validateForm();
   }
 
   #disableSubmit() {
     if (this.hasSubmitTarget) {
-      this.submitTarget.setAttribute('disabled', true);
+      this.submitTarget.setAttribute("disabled", true);
     } else {
-      Stimulus.logDebugActivity('No submit target found for form', 'disableSubmit');
+      Stimulus.logDebugActivity(
+        "No submit target found for form",
+        "disableSubmit",
+      );
     }
   }
 
   #enableSubmit() {
     if (this.hasSubmitTarget) {
-      this.submitTarget.removeAttribute('disabled');
+      this.submitTarget.removeAttribute("disabled");
     } else {
-      Stimulus.logDebugActivity('No submit target found for form', 'enableSubmit');
+      Stimulus.logDebugActivity(
+        "No submit target found for form",
+        "enableSubmit",
+      );
     }
   }
 
   #cableConnected() {
-    Stimulus.logDebugActivity('ActionValidator connected to cable', 'cableConnected');
+    Stimulus.logDebugActivity(
+      "ActionValidator connected to cable",
+      "cableConnected",
+    );
   }
 
   #cableDisconnected() {
-    Stimulus.logDebugActivity('ActionValidator disconnected from cable', 'cableDisconnected');
+    Stimulus.logDebugActivity(
+      "ActionValidator disconnected from cable",
+      "cableDisconnected",
+    );
   }
 }
